@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Fan, Ustoz, Aloqa
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -6,6 +6,7 @@ from .forms import AloqaForm
 from datetime import date, timedelta
 from django.utils import timezone
 from collections import defaultdict
+from django.views.decorators.http import require_POST
 
 
 def home(request):
@@ -171,3 +172,10 @@ def ustoz_qoshish(request):
             return redirect('ustozlar_boshqaruv')
 
     return render(request, 'core/ustoz_qoshish.html', {'fanlar': fanlar})
+
+@require_POST
+@login_required
+def aloqa_ochirish(request, aloqa_id):
+    aloqa = get_object_or_404(Aloqa, id=aloqa_id)
+    aloqa.delete()
+    return redirect('aloqalar')

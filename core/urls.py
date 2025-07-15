@@ -14,4 +14,5 @@ urlpatterns = [
     path('aloqalar/', views.aloqalar, name='aloqalar'),
     path('admin-dashboard/ustoz-qoshish/', views.ustoz_qoshish, name='ustoz_qoshish'), 
     path('admin-dashboard/ustoz-qoshish/', views.ustoz_qoshish, name='ustoz_qoshish'),
+    path('aloqa-ochirish/<int:aloqa_id>/', views.aloqa_ochirish, name='aloqa_ochirish'),
 ]
