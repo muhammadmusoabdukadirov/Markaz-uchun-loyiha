@@ -3,6 +3,9 @@ from .models import Fan, Ustoz, Aloqa
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import AloqaForm
+from datetime import date, timedelta
+from django.utils import timezone
+from collections import defaultdict
 
 
 def home(request):
@@ -118,9 +121,32 @@ def ustoz_ozgartirish(request, ustoz_id):
     return render(request, 'core/ustoz_ozgartirish.html', {'ustoz': ustoz, 'fanlar': fanlar})
 
 
+@login_required
 def aloqalar(request):
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
     aloqalar = Aloqa.objects.select_related('ustoz__fan').order_by('-sana')
-    return render(request, 'core/aloqalar.html', {'aloqalar': aloqalar})
+
+    bugun = []
+    kecha = []
+    qolgan = []
+
+    for aloqa in aloqalar:
+        aloqa_sana = aloqa.sana.date()
+        if aloqa_sana == today:
+            bugun.append(aloqa)
+        elif aloqa_sana == yesterday:
+            kecha.append(aloqa)
+        else:
+            qolgan.append(aloqa)
+
+    context = {
+        'bugun': bugun,
+        'kecha': kecha,
+        'qolgan': qolgan
+    }
+    return render(request, 'core/aloqalar.html', context)
 
 @login_required
 def ustoz_qoshish(request):
