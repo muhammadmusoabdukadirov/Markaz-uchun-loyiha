@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fanlar</title>
-</head>
-<body>
-    <h1>Fanlar ro‘yxati</h1>
-    <ul>
+{% extends 'core/base.html' %}
+{% block title %}Fanlar{% endblock %}
+
+{% block content %}
+    <h2>Fanlar ro‘yxati</h2>
+    <ul class="list-group">
         {% for fan in fanlar %}
-            <li><a href="{% url 'ustozlar' fan.id %}">{{ fan.nomi }}</a></li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url 'ustozlar' fan.id %}">{{ fan.nomi }}</a>
+            </li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}

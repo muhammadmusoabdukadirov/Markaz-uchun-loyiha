@@ -1,15 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Panel</title>
-</head>
-<body>
-    <h1>Admin Panelga Xush Kelibsiz</h1>
+{% extends 'core/base.html' %}
+{% block title %}Admin Paneli{% endblock %}
 
-    <ul>
-        <li><a href="{% url 'fanlar_boshqaruv' %}">📘 Fanlar Boshqaruvi</a></li>
-        <li><a href="{% url 'ustozlar_boshqaruv' %}">👨‍🏫 Ustozlar Boshqaruvi</a></li>
-    </ul>
-    <p><a href="/">← Asosiy sahifaga qaytish</a></p>
-</body>
-</html>
+{% block content %}
+    <div class="text-center mb-5">
+        <h2 class="display-5">👨‍💼 Admin Paneliga Xush Kelibsiz</h2>
+        <p class="lead">Quyidagilardan birini tanlang:</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body text-center">
+                    <h4 class="card-title">📚 Fanlar Boshqaruvi</h4>
+                    <p class="card-text">Fanlarni qo‘shish, o‘chirish, o‘zgartirish mumkin</p>
+                    <a href="{% url 'fanlar_boshqaruv' %}" class="btn btn-light">Kirish</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body text-center">
+                    <h4 class="card-title">👨‍🏫 Ustozlar Boshqaruvi</h4>
+                    <p class="card-text">Ustozlarni boshqarish imkoniyati</p>
+                    <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-light">Kirish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+{% extends 'core/base.html' %}
+{% block title %}Fanlar{% endblock %}
+
+
+{% block content %}
+   <!DOCTYPE html>
 <html>
 <head>
     <title>Ustozni tahrirlash</title>
@@ -28,3 +33,4 @@
     <p><a href="{% url 'ustozlar_boshqaruv' %}">← Ustozlar boshqaruviga qaytish</a></p>
 </body>
 </html>
+{% endblock %}
