@@ -1,49 +1,56 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlar{% endblock %}
-
+{% block title %}{{ fan.nomi }} ustozlari{% endblock %}
 
 {% block content %}
-   <!DOCTYPE html>
-<html>
-<head>
-    <title>{{ fan.nomi }} ustozlari</title>
-</head>
-<body>
-    <h1>{{ fan.nomi }} fanidagi ustozlar</h1>
+<div class="container">
+    <h1 class="mb-4 text-primary">{{ fan.nomi }} fanidagi ustozlar</h1>
 
-    <!-- Xabarlar (messages) chiqishi uchun -->
     {% if messages %}
-        <ul>
+        <div class="mb-3">
             {% for message in messages %}
-                <li style="color: {% if message.tags == 'success' %}green{% elif message.tags == 'warning' %}orange{% else %}gray{% endif %};">
+                <div class="alert alert-{{ message.tags }}">
                     {{ message }}
-                </li>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     {% endif %}
 
-    <!-- Har bir ustoz haqida ma'lumot va forma -->
-    {% for ustoz in ustozlar %}
-        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
-            <h2>{{ ustoz.ism }}</h2>
-            <p><strong>Tajriba:</strong> {{ ustoz.tajriba_yil }} yil</p>
-            <p><strong>Daraja:</strong> {{ ustoz.daraja }}</p>
-            <p>{{ ustoz.tavsif }}</p>
-
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="ustoz_id" value="{{ ustoz.id }}">
-                <label>Telefon raqamingiz:</label><br>
-                <input type="text" name="tel" placeholder="+998..." required><br><br>
-                <button type="submit">Menga bog‘laning</button>
-            </form>
+    <div class="row">
+        {% for ustoz in ustozlar %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-success">{{ ustoz.ism }}</h4>
+                    <p><strong>📚 Tajriba:</strong> {{ ustoz.tajriba_yil }} yil</p>
+                    <p><strong>🏆 Daraja:</strong> {{ ustoz.daraja }}</p>
+                    <p>{{ ustoz.tavsif }}</p>
+                </div>
+            </div>
         </div>
-    {% empty %}
-        <p>Bu fandan hozircha ustoz mavjud emas.</p>
-    {% endfor %}
+        {% empty %}
+        <p class="text-muted">Bu fandan hozircha ustoz mavjud emas.</p>
+        {% endfor %}
+    </div>
 
-    <p><a href="/">← Ortga qaytish</a></p>
-</body>
-</html>
+    <!-- Aloqa formasi -->
+    <div class="card mt-5 p-4 shadow-sm">
+        <h3 class="mb-3 text-info">📞 Sizga yoqqan ustoz bormi?</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="ustoz_id" class="form-label">Ustozni tanlang</label>
+                <select name="ustoz_id" id="ustoz_id" class="form-select" required>
+                    <option value="">-- Tanlang --</option>
+                    {% for ustoz in ustozlar %}
+                        <option value="{{ ustoz.id }}">{{ ustoz.ism }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Raqam qoldirish</button>
+        </form>
+    </div>
 
+    <p class="mt-4"><a href="/" class="btn btn-outline-secondary">← Ortga qaytish</a></p>
+</div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block title %}Nomer Qoldirganlar{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📋 Nomer Qoldirganlar</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Telefon</th>
+            <th>Ustoz</th>
+            <th>Fan</th>
+            <th>Sana</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aloqa in aloqalar %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ aloqa.telefon }}</td>
+            <td>{{ aloqa.ustoz.ism }}</td>
+            <td>{{ aloqa.ustoz.fan.nomi }}</td>
+            <td>{{ aloqa.sana|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Hali hech kim raqam qoldirmagan</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

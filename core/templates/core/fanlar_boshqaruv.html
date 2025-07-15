@@ -1,34 +1,37 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlar{% endblock %}
-
+{% block title %}Fanlarni boshqarish{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fanlar boshqaruvi</title>
-</head>
-<body>
-    <h1>Fanlar boshqaruvi</h1>
+<h2 class="mb-4">Fanlarni boshqarish</h2>
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="nomi" placeholder="Yangi fan nomi kiriting" required>
-        <button type="submit">Qo‘shish</button>
-    </form>
+<form method="post" class="mb-4 p-4 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Yangi fan nomi</label>
+        <input type="text" name="nomi" class="form-control" placeholder="Masalan: Matematika" required>
+    </div>
+    <button type="submit" class="btn btn-success">Qo‘shish</button>
+</form>
 
-    <ul>
+<table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Fan nomi</th>
+            <th>Amallar</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for fan in fanlar %}
-                <li>
-                    {{ fan.nomi }}
-                    <a href="{% url 'fan_ozgartirish' fan.id %}">📝</a>
-                    <a href="{% url 'fan_ochirish' fan.id %}">❌</a>
-                </li>
-
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ fan.nomi }}</td>
+            <td>
+                <a href="{% url 'fan_ozgartirish' fan.id %}" class="btn btn-sm btn-primary">✏️</a>
+                <a href="{% url 'fan_ochirish' fan.id %}" class="btn btn-sm btn-danger">🗑</a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-
-    <p><a href="{% url 'admin_dashboard' %}">← Ortga qaytish</a></p>
-</body>
-</html>
+    </tbody>
+</table>
 {% endblock %}

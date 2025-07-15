@@ -2,29 +2,32 @@ from django.shortcuts import render, get_object_or_404, redirect, redirect
 from .models import Fan, Ustoz, Aloqa
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .forms import AloqaForm
 
 
 def home(request):
     fanlar = Fan.objects.all()
     return render(request, 'core/fanlar.html', {'fanlar': fanlar})
 
+
 def ustozlar(request, fan_id):
     fan = get_object_or_404(Fan, id=fan_id)
     ustozlar = Ustoz.objects.filter(fan=fan).order_by('-daraja')
 
-    if request.method == "POST":
-        tel = request.POST.get('tel')
+    if request.method == 'POST':
         ustoz_id = request.POST.get('ustoz_id')
+        ustoz = get_object_or_404(Ustoz, id=ustoz_id)
+        form = AloqaForm(request.POST)
+        if form.is_valid():
+            aloqa = form.save(commit=False)
+            aloqa.ustoz = ustoz
+            aloqa.save()
+            messages.success(request, "Raqamingiz muvaffaqiyatli qabul qilindi!")
+            return redirect('ustozlar', fan_id=fan_id)
+    else:
+        form = AloqaForm()
 
-        if tel and ustoz_id:
-            Aloqa.objects.create(telefon=tel, ustoz_id=ustoz_id)
-            messages.success(request, "Xabaringiz muvaffaqiyatli yuborildi! Tez orada aloqaga chiqamiz.")
-        else:
-            messages.warning(request, "Iltimos, telefon raqamingizni to‘liq kiriting!")
-
-        return redirect(request.path_info)
-
-    return render(request, 'core/ustozlar.html', {'fan': fan, 'ustozlar': ustozlar})
+    return render(request, 'core/ustozlar.html', {'fan': fan, 'ustozlar': ustozlar, 'form': form})
 
 
 @login_required
@@ -113,3 +116,8 @@ def ustoz_ozgartirish(request, ustoz_id):
         return redirect('ustozlar_boshqaruv')
 
     return render(request, 'core/ustoz_ozgartirish.html', {'ustoz': ustoz, 'fanlar': fanlar})
+
+
+def aloqalar(request):
+    aloqalar = Aloqa.objects.select_related('ustoz__fan').order_by('-sana')
+    return render(request, 'core/aloqalar.html', {'aloqalar': aloqalar})
