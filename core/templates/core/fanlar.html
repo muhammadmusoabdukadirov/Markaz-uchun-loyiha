@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fanlar</title>
+</head>
+<body>
+    <h1>Fanlar ro‘yxati</h1>
+    <ul>
+        {% for fan in fanlar %}
+            <li><a href="{% url 'ustozlar' fan.id %}">{{ fan.nomi }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

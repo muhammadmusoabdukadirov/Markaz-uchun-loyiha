@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fanlar boshqaruvi</title>
+</head>
+<body>
+    <h1>Fanlar boshqaruvi</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="nomi" placeholder="Yangi fan nomi kiriting" required>
+        <button type="submit">Qo‘shish</button>
+    </form>
+
+    <ul>
+        {% for fan in fanlar %}
+            <li>
+                {{ fan.nomi }}
+                <a href="{% url 'fan_ochirish' fan.id %}">❌ O‘chirish</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'admin_dashboard' %}">← Ortga qaytish</a></p>
+</body>
+</html>

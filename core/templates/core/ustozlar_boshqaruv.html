@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ustozlar boshqaruvi</title>
+</head>
+<body>
+    <h1>Ustozlar boshqaruvi</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="ism" placeholder="Ism" required><br>
+        <input type="number" name="tajriba_yil" placeholder="Tajriba (yil)" required><br>
+        <input type="number" name="daraja" placeholder="Daraja (1–100)" required><br>
+        
+        <select name="fan" required>
+            <option value="">Fan tanlang</option>
+            {% for fan in fanlar %}
+                <option value="{{ fan.id }}">{{ fan.nomi }}</option>
+            {% endfor %}
+        </select><br>
+
+        <textarea name="tavsif" placeholder="Tavsif" rows="3" cols="30"></textarea><br>
+        <button type="submit">Qo‘shish</button>
+    </form>
+
+    <ul>
+        {% for ustoz in ustozlar %}
+            <li>
+                {{ ustoz.ism }} ({{ ustoz.fan.nomi }}) — {{ ustoz.tajriba_yil }} yil
+                <a href="{% url 'ustoz_ochirish' ustoz.id %}">❌ O‘chirish</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'admin_dashboard' %}">← Ortga qaytish</a></p>
+</body>
+</html>
