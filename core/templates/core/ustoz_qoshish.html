@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block title %}Ustoz qo‘shish{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-success">+ Yangi ustoz qo‘shish</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Ismi:</label>
+            <input type="text" name="ism" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Tajriba (yil):</label>
+            <input type="number" name="tajriba_yil" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Daraja (raqam):</label>
+            <input type="number" name="daraja" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Fan:</label>
+            <select name="fan" class="form-control" required>
+                {% for fan in fanlar %}
+                    <option value="{{ fan.id }}">{{ fan.nomi }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Ustoz haqida:</label>
+            <textarea name="tavsif" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Qo‘shish</button>
+        <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-secondary">← Ortga</a>
+    </form>
+</div>
+{% endblock %}

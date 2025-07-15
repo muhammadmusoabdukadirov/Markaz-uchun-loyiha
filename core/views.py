@@ -121,3 +121,27 @@ def ustoz_ozgartirish(request, ustoz_id):
 def aloqalar(request):
     aloqalar = Aloqa.objects.select_related('ustoz__fan').order_by('-sana')
     return render(request, 'core/aloqalar.html', {'aloqalar': aloqalar})
+
+@login_required
+def ustoz_qoshish(request):
+    fanlar = Fan.objects.all()
+
+    if request.method == 'POST':
+        ism = request.POST.get('ism')
+        tajriba = request.POST.get('tajriba_yil')
+        daraja = request.POST.get('daraja')
+        fan_id = request.POST.get('fan')
+        tavsif = request.POST.get('tavsif')
+
+        if ism and tajriba and daraja and fan_id and tavsif:
+            fan = Fan.objects.get(id=fan_id)
+            Ustoz.objects.create(
+                ism=ism,
+                tajriba_yil=tajriba,
+                daraja=daraja,
+                fan=fan,
+                tavsif=tavsif
+            )
+            return redirect('ustozlar_boshqaruv')
+
+    return render(request, 'core/ustoz_qoshish.html', {'fanlar': fanlar})

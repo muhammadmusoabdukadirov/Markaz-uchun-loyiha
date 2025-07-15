@@ -1,45 +1,45 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlar{% endblock %}
-
-
+{% block title %}Ustozlarni Boshqarish{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Ustozlar boshqaruvi</title>
-</head>
-<body>
-    <h1>Ustozlar boshqaruvi</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary">📋 Ustozlar ro‘yxati</h2>
+        <a href="{% url 'ustoz_qoshish' %}" class="btn btn-success">+ Ustoz qo‘shish</a>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="ism" placeholder="Ism" required><br>
-        <input type="number" name="tajriba_yil" placeholder="Tajriba (yil)" required><br>
-        <input type="number" name="daraja" placeholder="Daraja (1–100)" required><br>
-        
-        <select name="fan" required>
-            <option value="">Fan tanlang</option>
-            {% for fan in fanlar %}
-                <option value="{{ fan.id }}">{{ fan.nomi }}</option>
-            {% endfor %}
-        </select><br>
+    {% if ustozlar %}
+        <table class="table table-striped table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Ism</th>
+                    <th>Fan</th>
+                    <th>Tajriba</th>
+                    <th>Daraja</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ustoz in ustozlar %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ ustoz.ism }}</td>
+                    <td>{{ ustoz.fan.nomi }}</td>
+                    <td>{{ ustoz.tajriba_yil }} yil</td>
+                    <td>{{ ustoz.daraja }}</td>
+                    <td>
+                        <a href="{% url 'ustoz_ozgartirish' ustoz.id %}" class="btn btn-sm btn-primary">✏️ O‘zgartirish</a>
+                        <a href="{% url 'ustoz_ochirish' ustoz.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Ishonchingiz komilmi?')">🗑️ O‘chirish</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">Hozircha hech qanday ustoz mavjud emas.</div>
+    {% endif %}
 
-        <textarea name="tavsif" placeholder="Tavsif" rows="3" cols="30"></textarea><br>
-        <button type="submit">Qo‘shish</button>
-    </form>
-
-    <ul>
-        {% for ustoz in ustozlar %}
-            <li>
-                {{ ustoz.ism }} ({{ ustoz.fan.nomi }}) — {{ ustoz.tajriba_yil }} yil
-                    <a href="{% url 'ustoz_ozgartirish' ustoz.id %}">📝</a>
-                    <a href="{% url 'ustoz_ochirish' ustoz.id %}">❌</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <p><a href="{% url 'admin_dashboard' %}">← Ortga qaytish</a></p>
-</body>
-</html>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mt-3">← Ortga</a>
+</div>
 {% endblock %}
