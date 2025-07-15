@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ustozni tahrirlash</title>
+</head>
+<body>
+    <h1>Ustozni tahrirlash</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="ism" value="{{ ustoz.ism }}" required><br>
+        <input type="number" name="tajriba_yil" value="{{ ustoz.tajriba_yil }}" required><br>
+        <input type="number" name="daraja" value="{{ ustoz.daraja }}" required><br>
+
+        <select name="fan" required>
+            {% for fan in fanlar %}
+                <option value="{{ fan.id }}" {% if fan.id == ustoz.fan.id %}selected{% endif %}>
+                    {{ fan.nomi }}
+                </option>
+            {% endfor %}
+        </select><br>
+
+        <textarea name="tavsif" rows="3" cols="30">{{ ustoz.tavsif }}</textarea><br>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <p><a href="{% url 'ustozlar_boshqaruv' %}">← Ustozlar boshqaruviga qaytish</a></p>
+</body>
+</html>

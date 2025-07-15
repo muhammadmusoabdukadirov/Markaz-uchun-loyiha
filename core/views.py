@@ -80,3 +80,36 @@ def ustoz_ochirish(request, ustoz_id):
     ustoz = get_object_or_404(Ustoz, id=ustoz_id)
     ustoz.delete()
     return redirect('ustozlar_boshqaruv')
+
+
+@login_required
+def fan_ozgartirish(request, fan_id):
+    fan = get_object_or_404(Fan, id=fan_id)
+
+    if request.method == 'POST':
+        nomi = request.POST.get('nomi')
+        if nomi:
+            fan.nomi = nomi
+            fan.save()
+            return redirect('fanlar_boshqaruv')
+
+    return render(request, 'core/fan_ozgartirish.html', {'fan': fan})
+
+
+@login_required
+def ustoz_ozgartirish(request, ustoz_id):
+    ustoz = get_object_or_404(Ustoz, id=ustoz_id)
+    fanlar = Fan.objects.all()
+
+    if request.method == 'POST':
+        ustoz.ism = request.POST.get('ism')
+        ustoz.tajriba_yil = request.POST.get('tajriba_yil')
+        ustoz.daraja = request.POST.get('daraja')
+        ustoz.tavsif = request.POST.get('tavsif')
+        fan_id = request.POST.get('fan')
+        if fan_id:
+            ustoz.fan = Fan.objects.get(id=fan_id)
+        ustoz.save()
+        return redirect('ustozlar_boshqaruv')
+
+    return render(request, 'core/ustoz_ozgartirish.html', {'ustoz': ustoz, 'fanlar': fanlar})

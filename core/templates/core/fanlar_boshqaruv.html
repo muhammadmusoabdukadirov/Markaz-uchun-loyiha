@@ -14,10 +14,12 @@
 
     <ul>
         {% for fan in fanlar %}
-            <li>
-                {{ fan.nomi }}
-                <a href="{% url 'fan_ochirish' fan.id %}">❌ O‘chirish</a>
-            </li>
+                <li>
+                    {{ fan.nomi }}
+                    <a href="{% url 'fan_ozgartirish' fan.id %}">📝</a>
+                    <a href="{% url 'fan_ochirish' fan.id %}">❌</a>
+                </li>
+
         {% endfor %}
     </ul>
 

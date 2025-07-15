@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fan tahrirlash</title>
+</head>
+<body>
+    <h1>Fan tahrirlash</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="nomi" value="{{ fan.nomi }}" required>
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <p><a href="{% url 'fanlar_boshqaruv' %}">← Fanlar boshqaruviga qaytish</a></p>
+</body>
+</html>

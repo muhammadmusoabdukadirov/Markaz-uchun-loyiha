@@ -27,7 +27,8 @@
         {% for ustoz in ustozlar %}
             <li>
                 {{ ustoz.ism }} ({{ ustoz.fan.nomi }}) — {{ ustoz.tajriba_yil }} yil
-                <a href="{% url 'ustoz_ochirish' ustoz.id %}">❌ O‘chirish</a>
+                    <a href="{% url 'ustoz_ozgartirish' ustoz.id %}">📝</a>
+                    <a href="{% url 'ustoz_ochirish' ustoz.id %}">❌</a>
             </li>
         {% endfor %}
     </ul>
