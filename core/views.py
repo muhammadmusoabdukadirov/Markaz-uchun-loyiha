@@ -7,12 +7,13 @@ from datetime import date, timedelta
 from django.utils import timezone
 from collections import defaultdict
 from django.views.decorators.http import require_POST
+from .telegram import send_telegram_message
+
 
 
 def home(request):
     fanlar = Fan.objects.all()
     return render(request, 'core/fanlar.html', {'fanlar': fanlar})
-
 
 def ustozlar(request, fan_id):
     fan = get_object_or_404(Fan, id=fan_id)
@@ -26,13 +27,29 @@ def ustozlar(request, fan_id):
             aloqa = form.save(commit=False)
             aloqa.ustoz = ustoz
             aloqa.save()
+
+            # Telegram xabari
+            message = f"""
+📥 Yangi aloqa so‘rovi:
+👤 Ism: {aloqa.ism}
+📞 Tel: {aloqa.telefon}
+🎓 Ustoz: {aloqa.ustoz.ism} ({aloqa.ustoz.fan.nomi})
+🕒 Sana: {aloqa.sana.strftime('%Y-%m-%d %H:%M')}
+            """
+
+            send_telegram_message(message)
+
             messages.success(request, "Raqamingiz muvaffaqiyatli qabul qilindi!")
             return redirect('ustozlar', fan_id=fan_id)
+
     else:
         form = AloqaForm()
 
-    return render(request, 'core/ustozlar.html', {'fan': fan, 'ustozlar': ustozlar, 'form': form})
-
+    return render(request, 'core/ustozlar.html', {
+        'fan': fan,
+        'ustozlar': ustozlar,
+        'form': form
+    })
 
 @login_required
 def admin_dashboard(request):
@@ -179,3 +196,5 @@ def aloqa_ochirish(request, aloqa_id):
     aloqa = get_object_or_404(Aloqa, id=aloqa_id)
     aloqa.delete()
     return redirect('aloqalar')
+
+
