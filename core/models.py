@@ -21,10 +21,10 @@ class Ustoz(models.Model):
     
 
 class Aloqa(models.Model):
+    ism = models.CharField(max_length=100, default="Anonim")
     telefon = models.CharField(max_length=20)
     ustoz = models.ForeignKey(Ustoz, on_delete=models.CASCADE)
     sana = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.telefon} → {self.ustoz.ism}"
-    
+        return f"{self.ism} — {self.telefon} → {self.ustoz.ism}"

@@ -34,21 +34,32 @@
 
     <!-- Aloqa formasi -->
     <div class="card mt-5 p-4 shadow-sm">
-        <h3 class="mb-3 text-info">📞 Sizga yoqqan ustoz bormi?</h3>
+        <h3 class="mt-5">Ustoz sizga yoqdimi?</h3>
         <form method="post">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="ustoz_id" class="form-label">Ustozni tanlang</label>
-                <select name="ustoz_id" id="ustoz_id" class="form-select" required>
-                    <option value="">-- Tanlang --</option>
+                <label for="ustoz_id" class="form-label">Qaysi ustozni tanladingiz?</label>
+                <select name="ustoz_id" id="ustoz_id" class="form-control" required>
+                    <option value="">-- Ustozni tanlang --</option>
                     {% for ustoz in ustozlar %}
                         <option value="{{ ustoz.id }}">{{ ustoz.ism }}</option>
                     {% endfor %}
                 </select>
             </div>
-            {{ form.as_p }}
+
+            <div class="mb-3">
+                <label for="id_ism" class="form-label">Ismingiz</label>
+                <input type="text" name="ism" class="form-control" required placeholder="Ismizni kiriting.">
+            </div>
+
+            <div class="mb-3">
+                <label for="id_telefon" class="form-label">Telefon raqam</label>
+                <input type="text" name="telefon" class="form-control" required placeholder="+998...">
+            </div>
+
             <button type="submit" class="btn btn-success">Raqam qoldirish</button>
         </form>
+
     </div>
 
     <p class="mt-4"><a href="/" class="btn btn-outline-secondary">← Ortga qaytish</a></p>
