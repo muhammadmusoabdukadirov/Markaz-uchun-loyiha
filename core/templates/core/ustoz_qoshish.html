@@ -3,34 +3,45 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-success">+ Yangi ustoz qo‘shish</h2>
-    <form method="post">
+    <h2 class="mb-4 text-success">➕ Yangi ustoz qo‘shish</h2>
+
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
-            <label>Ismi:</label>
+            <label for="ism" class="form-label">Ismi</label>
             <input type="text" name="ism" class="form-control" required>
         </div>
+
         <div class="mb-3">
-            <label>Tajriba (yil):</label>
-            <input type="number" name="tajriba_yil" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Daraja (raqam):</label>
-            <input type="number" name="daraja" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Fan:</label>
-            <select name="fan" class="form-control" required>
+            <label for="fan" class="form-label">Fan</label>
+            <select name="fan" class="form-select" required>
                 {% for fan in fanlar %}
                     <option value="{{ fan.id }}">{{ fan.nomi }}</option>
                 {% endfor %}
             </select>
         </div>
+
         <div class="mb-3">
-            <label>Ustoz haqida:</label>
-            <textarea name="tavsif" class="form-control" rows="4" required></textarea>
+            <label for="tajriba_yil" class="form-label">Tajriba (yil)</label>
+            <input type="number" name="tajriba_yil" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Qo‘shish</button>
+
+        <div class="mb-3">
+            <label for="daraja" class="form-label">Daraja</label>
+            <input type="number" name="daraja" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="tavsif" class="form-label">Tavsif</label>
+            <textarea name="tavsif" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="rasm" class="form-label">Rasm (ixtiyoriy)</label>
+            <input type="file" name="rasm" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-success">✅ Qo‘shish</button>
         <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-secondary">← Ortga</a>
     </form>
 </div>
