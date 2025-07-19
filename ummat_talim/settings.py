@@ -66,6 +66,7 @@ TEMPLATES = [
             ],
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'ummat_talim.wsgi.application'
