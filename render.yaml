@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: markaz-django
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ummat_talim.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ummat_talim.settings
+      - key: PYTHON_VERSION
+        value: 3.10
+    autoDeploy: true
