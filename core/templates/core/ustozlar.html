@@ -2,66 +2,272 @@
 {% block title %}{{ fan.nomi }} ustozlari{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-4 text-primary">{{ fan.nomi }} fanidagi ustozlar</h1>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold text-gradient-primary">
+                <i class="fas fa-chalkboard-teacher me-2"></i>{{ fan.nomi }} Ustozlari
+            </h1>
+            <p class="lead text-muted">O'zingizga yoqadigan ustozni tanlang</p>
+        </div>
+            <a href="{% url 'all_fans' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Barcha fanlar
+            </a>
+
+    </div>
 
     {% if messages %}
-        <div class="mb-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
+    <div class="alert-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
-    <div class="row">
+    <div class="row g-4">
         {% for ustoz in ustozlar %}
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h4 class="card-title text-success">{{ ustoz.ism }}</h4>
-                    <p><strong>📚 Tajriba:</strong> {{ ustoz.tajriba_yil }} yil</p>
-                    <p><strong>🏆 Daraja:</strong> {{ ustoz.daraja }}</p>
-                    <p>{{ ustoz.tavsif }}</p>
+        <div class="col-lg-6">
+            <div class="card teacher-card shadow-lg h-100">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                    <img src="{% if ustoz.rasm %}{{ ustoz.rasm.url }}{% else %}https://via.placeholder.com/300{% endif %}" 
+                        class="img-fluid rounded-start h-100" 
+                        alt="{{ ustoz.ism }}"
+                        style="object-fit: cover;">
+
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h3 class="card-title fw-bold">{{ ustoz.ism }}</h3>
+                                    <h5 class="text-primary">{{ ustoz.fan.nomi }}</h5>
+                                </div>
+                                <div class="star-rating" data-rating="{{ ustoz.daraja }}">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star{% if forloop.counter > ustoz.daraja %} text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="teacher-meta my-3">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-clock me-1"></i> {{ ustoz.tajriba_yil }} yil tajriba
+                                    </span>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-users me-1"></i> {{ ustoz.students_count }} o'quvchi
+                                    </span>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-star me-1"></i> {{ ustoz.rating }}/5 reyting
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-text mb-4">
+                                <p>{{ ustoz.tavsif|truncatechars:150 }}</p>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="collapse" 
+                                    data-bs-target="#teacher-{{ ustoz.id }}">
+                                <i class="fas fa-info-circle me-1"></i> Batafsil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Collapsible Details -->
+                <div class="collapse" id="teacher-{{ ustoz.id }}">
+                    <div class="card-footer bg-light">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Qo'shimcha ma'lumot:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-calendar-alt me-2 text-primary"></i> Yosh: {{ ustoz.age }} yosh</li>
+                                    <li><i class="fas fa-university me-2 text-primary"></i> Ma'lumot: {{ ustoz.education }}</li>
+                                    <li><i class="fas fa-globe me-2 text-primary"></i> Tillar: {{ ustoz.languages }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">O'quvchilar fikrlari:</h6>
+                                <div class="testimonial">
+                                    <p class="fst-italic">"{{ ustoz.testimonial }}"</p>
+                                    <p class="text-end text-muted">- {{ ustoz.testimonial_author }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p class="text-muted">Bu fandan hozircha ustoz mavjud emas.</p>
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle me-2"></i>Bu fandan hozircha ustoz mavjud emas
+            </div>
+        </div>
         {% endfor %}
     </div>
 
-    <!-- Aloqa formasi -->
-    <div class="card mt-5 p-4 shadow-sm">
-        <h3 class="mt-5">Ustoz sizga yoqdimi?</h3>
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="ustoz_id" class="form-label">Qaysi ustozni tanladingiz?</label>
-                <select name="ustoz_id" id="ustoz_id" class="form-control" required>
-                    <option value="">-- Ustozni tanlang --</option>
-                    {% for ustoz in ustozlar %}
-                        <option value="{{ ustoz.id }}">{{ ustoz.ism }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="id_ism" class="form-label">Ismingiz</label>
-                <input type="text" name="ism" class="form-control" required placeholder="Ismizni kiriting.">
-            </div>
-
-            <div class="mb-3">
-                <label for="id_telefon" class="form-label">Telefon raqam</label>
-                <input type="text" name="telefon" class="form-control" required placeholder="+998...">
-            </div>
-
-            <button type="submit" class="btn btn-success">Raqam qoldirish</button>
-        </form>
-
+    <!-- Contact Form -->
+    <div class="card shadow-lg mt-5" id="contactForm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-edit me-2"></i>Ustozga Murojaat Qilish
+            </h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="ustoz_id" name="ustoz_id" required>
+                                <option value="">Tanlang...</option>
+                                {% for ustoz in ustozlar %}
+                                    <option value="{{ ustoz.id }}">{{ ustoz.ism }} - {{ ustoz.fan.nomi }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="ustoz_id">Ustozni tanlang</label>
+                            <div class="invalid-feedback">
+                                Iltimos, ustozni tanlang
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="id_ism" name="ism" 
+                                   placeholder="Ismingiz" required>
+                            <label for="id_ism">Ismingiz</label>
+                            <div class="invalid-feedback">
+                                Iltimos, ismingizni kiriting
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="id_telefon" name="telefon" 
+                                   placeholder="Telefon raqam" required 
+                                   pattern="\+998\d{9}" 
+                                   title="+998XXXXXXXXX formatida kiriting">
+                            <label for="id_telefon">Telefon raqam</label>
+                            <div class="invalid-feedback">
+                                Iltimos, to'g'ri telefon raqam kiriting
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="email" class="form-control" id="id_email" name="email" 
+                                   placeholder="Email (ixtiyoriy)">
+                            <label for="id_email">Email (ixtiyoriy)</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="id_message" name="message" 
+                                      placeholder="Qo'shimcha xabar" style="height: 100px"></textarea>
+                            <label for="id_message">Qo'shimcha xabar (ixtiyoriy)</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-lg w-100" type="submit">
+                            <i class="fas fa-paper-plane me-2"></i>Yuborish
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <p class="mt-4"><a href="/" class="btn btn-outline-secondary">← Ortga qaytish</a></p>
 </div>
+
+<style>
+    .teacher-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .teacher-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .star-rating {
+        color: #f6c23e;
+        font-size: 1.2rem;
+    }
+    
+    .teacher-meta .badge {
+        font-weight: 500;
+    }
+    
+    .testimonial {
+        background-color: rgba(78, 115, 223, 0.05);
+        border-left: 3px solid var(--primary);
+        padding: 0.5rem 1rem;
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+    
+    .alert-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 1000;
+        width: 350px;
+    }
+    
+    @media (max-width: 768px) {
+        .teacher-card .col-md-4 {
+            height: 200px;
+        }
+        
+        .alert-container {
+            width: calc(100% - 40px);
+            top: 70px;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+    
+    // Phone number formatting
+    const phoneInput = document.getElementById('id_telefon');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 0 && !value.startsWith('998')) {
+                value = '998' + value;
+            }
+            if (value.length > 0) {
+                value = '+' + value;
+            }
+            this.value = value.substring(0, 13);
+        });
+    }
+    
+    // Smooth scroll to contact form when empty
+    if (window.location.hash === '#contactForm' && document.getElementById('contactForm')) {
+        setTimeout(() => {
+            document.getElementById('contactForm').scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+    }
+});
+</script>
 {% endblock %}

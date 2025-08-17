@@ -1,39 +1,269 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlarni boshqarish{% endblock %}
+{% block title %}Fanlarni Boshqarish{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Fanlarni boshqarish</h2>
-
-<form method="post" class="mb-4 p-4 border rounded shadow-sm bg-light">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label class="form-label">Yangi fan nomi</label>
-        <input type="text" name="nomi" class="form-control" placeholder="Masalan: Matematika" required>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-book-open text-primary me-2"></i>Fanlarni Boshqarish
+        </h1>
+        <button class="d-none d-sm-inline-block btn btn-primary shadow-sm" data-bs-toggle="modal" 
+                data-bs-target="#newSubjectModal">
+            <i class="fas fa-plus me-2"></i>Yangi Fan
+        </button>
     </div>
-    <button type="submit" class="btn btn-success">Qo‘shish</button>
-</form>
 
-<table class="table table-bordered table-hover shadow-sm">
-    <thead class="table-light">
-        <tr>
-            <th>#</th>
-            <th>Fan nomi</th>
-            <th>Amallar</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for fan in fanlar %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ fan.nomi }}</td>
-            <td>
-                <a href="{% url 'fan_ozgartirish' fan.id %}" class="btn btn-sm btn-primary">✏️</a>
-                <a href="{% url 'fan_ochirish' fan.id %}" class="btn btn-sm btn-danger">🗑</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-         <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary mt-4">← Ortga qaytish</a>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Barcha Fanlar Ro'yxati</h6>
+            <div class="search-box">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Qidirish..." id="searchInput">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="subjectsTable" width="100%">
+                    <thead class="bg-gradient-primary text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Fan Nomi</th>
+                            <th>Ustozlar Soni</th>
+                            <th>Yaratilgan Sana</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fan in fanlar %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <a href="{% url 'ustozlar' fan.id %}" class="text-primary">
+                                    {{ fan.nomi }}
+                                </a>
+                            </td>
+                            <td>{{ fan.ustoz_set.count }}</td>
+                            <td>{{ fan.created_at|date:"d.m.Y" }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'fan_ozgartirish' fan.id %}" 
+                                       class="btn btn-sm btn-primary" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Tahrirlash">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'fan_ochirish' fan.id %}" 
+                                       class="btn btn-sm btn-danger confirm-delete" 
+                                       data-bs-toggle="tooltip" 
+                                       title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-info view-subject" 
+                                            data-subject-id="{{ fan.id }}"
+                                            data-bs-toggle="tooltip" 
+                                            title="Ko'rish">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>Hozircha hech qanday fan mavjud emas
+                                </div>
+                                <button class="btn btn-primary" data-bs-toggle="modal" 
+                                        data-bs-target="#newSubjectModal">
+                                    <i class="fas fa-plus me-2"></i>Yangi fan qo'shish
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mb-4">
+        <i class="fas fa-arrow-left me-2"></i>Ortga
+    </a>
+</div>
 
+<!-- New Subject Modal -->
+<div class="modal fade" id="newSubjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Yangi Fan Qo'shish</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="subjectForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="subjectName" class="form-label">Fan Nomi</label>
+                        <input type="text" class="form-control" id="subjectName" name="nomi" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Subject View Modal -->
+<div class="modal fade" id="subjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Fan Ma'lumotlari</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="subjectModalBody">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yuklanmoqda...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .search-box {
+        width: 300px;
+    }
+    
+    #subjectsTable tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    #subjectsTable tbody tr:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DataTable
+    $('#subjectsTable').DataTable({
+        responsive: true,
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/uz.json"
+        },
+        dom: '<"top"f>rt<"bottom"lip><"clear">',
+        pageLength: 10
+    });
+    
+    // View subject details
+    document.querySelectorAll('.view-subject').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const subjectId = this.getAttribute('data-subject-id');
+            const modal = new bootstrap.Modal(document.getElementById('subjectModal'));
+            
+            // Fetch subject data
+            fetch(`/api/subjects/${subjectId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('subjectModalBody').innerHTML = `
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>${data.name}</h4>
+                                <p class="text-muted">${data.created_at}</p>
+                                
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2">Umumiy ma'lumot</h5>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>Ustozlar soni:</strong></p>
+                                            <p>${data.teachers_count}</p>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>Murojaatlar soni:</strong></p>
+                                            <p>${data.contacts_count}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2">Tavsif</h5>
+                                    <p>${data.description || "Tavsif mavjud emas"}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Eng yaxshi ustozlar</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            ${data.top_teachers.map(teacher => `
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    ${teacher.name}
+                                                    <span class="badge bg-primary rounded-pill">${teacher.rating}</span>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('subjectModalBody').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Ma'lumotlarni yuklashda xatolik yuz berdi
+                        </div>
+                    `;
+                });
+            
+            modal.show();
+        });
+    });
+    
+    // Form submission
+    document.getElementById('subjectForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        fetch("{% url 'fanlar_boshqaruv' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('success', 'Fan muvaffaqiyatli qo\'shildi!');
+                bootstrap.Modal.getInstance(document.getElementById('newSubjectModal')).hide();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast('danger', 'Xatolik yuz berdi: ' + data.error);
+            }
+        })
+        .catch(error => {
+            showToast('danger', 'Server xatosi yuz berdi');
+        });
+    });
+});
+</script>
 {% endblock %}

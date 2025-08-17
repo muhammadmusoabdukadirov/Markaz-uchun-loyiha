@@ -2,17 +2,90 @@
 {% block title %}Fanlar{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Fanlar ro‘yxati</h1>
-
-<div class="row">
-    {% for fan in fanlar %}
-    <div class="col-md-4 mb-3">
-        <a href="{% url 'ustozlar' fan.id %}" class="btn btn-outline-primary w-100 p-3 shadow-sm" style="font-size: 18px;">
-            {{ fan.nomi }}
-        </a>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient-primary">
+            <i class="fas fa-book-open me-2"></i>O'quv Fanlari
+        </h1>
+        <p class="lead text-muted">O'zingizga kerakli fanni tanlang</p>
     </div>
-    {% empty %}
-    <p>Hali fanlar mavjud emas.</p>
-    {% endfor %}
+
+    <div class="row g-4">
+        {% for fan in fanlar %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card subject-card h-100 shadow-lg">
+                <div class="card-body text-center py-4">
+                    <div class="subject-icon mb-3">
+                        <i class="fas fa-book fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="card-title fw-bold">{{ fan.nomi }}</h3>
+                    <p class="card-text text-muted">{{ fan.ustoz_set.count }} ta ustoz</p>
+                    <a href="{% url 'ustozlar' fan.id %}" class="btn btn-primary btn-rounded stretched-link">
+                        <i class="fas fa-arrow-right me-1"></i> Ustozlarni ko'rish
+                    </a>
+                    <a href="{% url 'all_fans' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Barcha fanlar
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle me-2"></i>Hozircha hech qanday fan mavjud emas
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
+<style>
+    .subject-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 10px;
+    }
+    
+    .subject-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .subject-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(78, 115, 223, 0.1);
+        border-radius: 50%;
+    }
+    
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    @media (max-width: 768px) {
+        .subject-icon {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to cards
+    const cards = document.querySelectorAll('.subject-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate__animated', 'animate__fadeInUp');
+    });
+});
+</script>
 {% endblock %}

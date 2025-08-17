@@ -2,44 +2,302 @@
 {% block title %}Ustozlarni Boshqarish{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary">📋 Ustozlar ro‘yxati</h2>
-        <a href="{% url 'ustoz_qoshish' %}" class="btn btn-success">+ Ustoz qo‘shish</a>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chalkboard-teacher text-primary me-2"></i>Ustozlar Boshqaruvi
+        </h1>
+        <a href="{% url 'ustoz_qoshish' %}" class="d-none d-sm-inline-block btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-2"></i>Yangi Ustoz
+        </a>
     </div>
 
-    {% if ustozlar %}
-        <table class="table table-striped table-bordered shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Ism</th>
-                    <th>Fan</th>
-                    <th>Tajriba</th>
-                    <th>Daraja</th>
-                    <th>Amallar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ustoz in ustozlar %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ ustoz.ism }}</td>
-                    <td>{{ ustoz.fan.nomi }}</td>
-                    <td>{{ ustoz.tajriba_yil }} yil</td>
-                    <td>{{ ustoz.daraja }}</td>
-                    <td>
-                        <a href="{% url 'ustoz_ozgartirish' ustoz.id %}" class="btn btn-sm btn-primary">✏️ O‘zgartirish</a>
-                        <a href="{% url 'ustoz_ochirish' ustoz.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Ishonchingiz komilmi?')">🗑️ O‘chirish</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info">Hozircha hech qanday ustoz mavjud emas.</div>
-    {% endif %}
-
-    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mt-3">← Ortga</a>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Barcha Ustozlar Ro'yxati</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" 
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="#">Excelga yuklash</a></li>
+                    <li><a class="dropdown-item" href="#">Filter qo'llash</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Yangi tartiblash</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="ustozlarTable" width="100%" cellspacing="0">
+                    <thead class="bg-gradient-primary text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Ism</th>
+                            <th>Fan</th>
+                            <th>Tajriba</th>
+                            <th>Daraja</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ustoz in ustozlar %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ ustoz.ism }}</td>
+                            <td>{{ ustoz.fan.nomi }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                        aria-valuenow="{{ ustoz.tajriba_yil }}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="10">
+                                        {{ ustoz.tajriba_yil }} yil
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="star-rating" data-rating="{{ ustoz.daraja }}">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star{% if forloop.counter > ustoz.daraja %} text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'ustoz_ozgartirish' ustoz.id %}" 
+                                       class="btn btn-sm btn-primary" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Tahrirlash">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'ustoz_ochirish' ustoz.id %}" 
+                                       class="btn btn-sm btn-danger confirm-delete" 
+                                       data-bs-toggle="tooltip" 
+                                       title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-info view-teacher" 
+                                            data-teacher-id="{{ ustoz.id }}"
+                                            data-bs-toggle="tooltip" 
+                                            title="Ko'rish">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>Hozircha hech qanday ustoz mavjud emas
+                                </div>
+                                <a href="{% url 'ustoz_qoshish' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Yangi ustoz qo'shish
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mb-4">
+        <i class="fas fa-arrow-left me-2"></i>Ortga qaytish
+    </a>
 </div>
+
+<!-- Teacher View Modal -->
+<div class="modal fade" id="teacherModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Ustoz Ma'lumotlari</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="teacherModalBody">
+                <!-- Dynamic content will be loaded here -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yuklanmoqda...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    .star-rating {
+        color: #f6c23e;
+        font-size: 1rem;
+    }
+    
+    .table-hover tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+        transform: scale(1.01);
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    
+    .progress {
+        height: 20px;
+        border-radius: 10px;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // View teacher modal
+    document.querySelectorAll('.view-teacher').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const teacherId = this.getAttribute('data-teacher-id');
+            const modal = new bootstrap.Modal(document.getElementById('teacherModal'));
+            
+            // Fetch teacher data
+            fetch(`/api/teachers/${teacherId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('teacherModalBody').innerHTML = `
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="${data.photo_url || 'https://via.placeholder.com/200'}" 
+                                     class="img-fluid rounded-circle mb-3" 
+                                     alt="${data.ism}" 
+                                     style="width: 200px; height: 200px; object-fit: cover;">
+                                <h4>${data.ism}</h4>
+                                <h5 class="text-muted">${data.fan}</h5>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2">Umumiy ma'lumot</h5>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>Tajriba:</strong></p>
+                                            <p>${data.tajriba_yil} yil</p>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>Daraja:</strong></p>
+                                            <div class="star-rating" data-rating="${data.daraja}">
+                                                ${'<i class="fas fa-star"></i>'.repeat(data.daraja)}
+                                                ${'<i class="fas fa-star text-muted"></i>'.repeat(5-data.daraja)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2">Tavsif</h5>
+                                    <p>${data.tavsif || "Tavsif mavjud emas"}</p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5 class="border-bottom pb-2">Statistika</h5>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>O'quvchilar soni:</strong></p>
+                                            <p>${data.students_count || 0}</p>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <p class="mb-1"><strong>Reyting:</strong></p>
+                                            <p>${data.rating || 0}/5</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('teacherModalBody').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Ma'lumotlarni yuklashda xatolik yuz berdi
+                        </div>
+                    `;
+                });
+            
+            modal.show();
+        });
+    });
+    
+    // Initialize DataTable
+    if (document.getElementById('ustozlarTable')) {
+        $('#ustozlarTable').DataTable({
+            responsive: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/uz.json"
+            },
+            dom: '<"top"f>rt<"bottom"lip><"clear">',
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100]
+        });
+    }
+});
+</script>
 {% endblock %}

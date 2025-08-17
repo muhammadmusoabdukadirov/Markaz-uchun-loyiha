@@ -1,111 +1,309 @@
 {% extends 'core/base.html' %}
-{% block title %}Telefon raqamlar{% endblock %}
+{% block title %}Murojaatlar{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-primary mb-4">📞 Telefon raqamlari ro‘yxati</h2>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-phone-alt text-primary me-2"></i>Telefon Raqamlar Ro'yxati
+        </h1>
+        <div class="d-flex">
+            <div class="dropdown me-2">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                        id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <ul class="dropdown-menu shadow">
+                    <li><a class="dropdown-item" href="?filter=today">Bugungi</a></li>
+                    <li><a class="dropdown-item" href="?filter=yesterday">Kechagi</a></li>
+                    <li><a class="dropdown-item" href="?filter=all">Barchasi</a></li>
+                </ul>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-file-export me-1"></i>Export
+            </button>
+        </div>
+    </div>
 
-    {% if bugun %}
-        <h4 class="text-success mb-3">📅 Bugungi raqamlar</h4>
-        <table class="table table-bordered table-striped shadow-sm">
-            <thead class="table-success">
-                <tr>
-                    <th>#</th>
-                    <th>Telefon</th>
-                    <th>Ustoz</th>
-                    <th>Fan</th>
-                    <th>🗑️</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for aloqa in bugun %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ aloqa.telefon }}</td>
-                        <td>{{ aloqa.ustoz.ism }}</td>
-                        <td>{{ aloqa.ustoz.fan.nomi }}</td>
-                        <td>
-                            <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('O‘chirilsinmi?')">🗑️</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Bugungi murojaatlar
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ bugun|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Kechagi murojaatlar
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ kecha|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-week fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                O'rtacha kunlik
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ average_daily }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Umumiy murojaatlar
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_contacts }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-phone fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {% if kecha %}
-        <h4 class="text-warning mt-5 mb-3">📆 Kechagi raqamlar</h4>
-        <table class="table table-bordered table-striped shadow-sm">
-            <thead class="table-warning">
-                <tr>
-                    <th>#</th>
-                    <th>Telefon</th>
-                    <th>Ustoz</th>
-                    <th>Fan</th>
-                    <th>🗑️</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for aloqa in kecha %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ aloqa.telefon }}</td>
-                        <td>{{ aloqa.ustoz.ism }}</td>
-                        <td>{{ aloqa.ustoz.fan.nomi }}</td>
-                        <td>
-                            <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('O‘chirilsinmi?')">🗑️</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <!-- Contact Tables -->
+    <div class="card shadow mb-4">
+        {% if bugun|length > 0 %}
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">
+                <i class="fas fa-calendar-day me-1"></i>Bugungi murojaatlar
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%">
+                    <thead class="bg-success text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Ism</th>
+                            <th>Telefon</th>
+                            <th>Ustoz</th>
+                            <th>Fan</th>
+                            <th>Vaqt</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aloqa in bugun %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ aloqa.ism }}</td>
+                            <td>
+                                <a href="tel:{{ aloqa.telefon }}" class="text-primary">
+                                    <i class="fas fa-phone me-1"></i>{{ aloqa.telefon }}
+                                </a>
+                            </td>
+                            <td>{{ aloqa.ustoz.ism }}</td>
+                            <td>{{ aloqa.ustoz.fan.nomi }}</td>
+                            <td>{{ aloqa.sana|date:"H:i" }}</td>
+                            <td class="text-center">
+                                <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger confirm-delete" 
+                                            data-bs-toggle="tooltip" title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                <a href="tel:{{ aloqa.telefon }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-phone-volume"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
-    {% if qolgan %}
-        <h4 class="text-secondary mt-5 mb-3">📚 Eski raqamlar</h4>
-        <table class="table table-bordered table-striped shadow-sm">
-            <thead class="table-secondary">
-                <tr>
-                    <th>#</th>
-                    <th>Telefon</th>
-                    <th>Ustoz</th>
-                    <th>Fan</th>
-                    <th>Sana</th>
-                    <th>🗑️</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for aloqa in qolgan %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ aloqa.telefon }}</td>
-                        <td>{{ aloqa.ustoz.ism }}</td>
-                        <td>{{ aloqa.ustoz.fan.nomi }}</td>
-                        <td>{{ aloqa.sana.date }}</td>
-                        <td>
-                            <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('O‘chirilsinmi?')">🗑️</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+        {% if kecha|length > 0 %}
+        <div class="card-header py-3 bg-warning-light">
+            <h6 class="m-0 font-weight-bold text-warning">
+                <i class="fas fa-calendar-week me-1"></i>Kechagi murojaatlar
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%">
+                    <thead class="bg-warning text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Ism</th>
+                            <th>Telefon</th>
+                            <th>Ustoz</th>
+                            <th>Fan</th>
+                            <th>Vaqt</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aloqa in kecha %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ aloqa.ism }}</td>
+                            <td>
+                                <a href="tel:{{ aloqa.telefon }}" class="text-primary">
+                                    <i class="fas fa-phone me-1"></i>{{ aloqa.telefon }}
+                                </a>
+                            </td>
+                            <td>{{ aloqa.ustoz.ism }}</td>
+                            <td>{{ aloqa.ustoz.fan.nomi }}</td>
+                            <td>{{ aloqa.sana|date:"H:i" }}</td>
+                            <td class="text-center">
+                                <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger confirm-delete" 
+                                            data-bs-toggle="tooltip" title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                <a href="tel:{{ aloqa.telefon }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-phone-volume"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if qolgan|length > 0 %}
+        <div class="card-header py-3 bg-secondary-light">
+            <h6 class="m-0 font-weight-bold text-secondary">
+                <i class="fas fa-history me-1"></i>Avvalgi murojaatlar
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>#</th>
+                            <th>Ism</th>
+                            <th>Telefon</th>
+                            <th>Ustoz</th>
+                            <th>Fan</th>
+                            <th>Sana</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aloqa in qolgan %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ aloqa.ism }}</td>
+                            <td>
+                                <a href="tel:{{ aloqa.telefon }}" class="text-primary">
+                                    <i class="fas fa-phone me-1"></i>{{ aloqa.telefon }}
+                                </a>
+                            </td>
+                            <td>{{ aloqa.ustoz.ism }}</td>
+                            <td>{{ aloqa.ustoz.fan.nomi }}</td>
+                            <td>{{ aloqa.sana|date:"d.m.Y" }}</td>
+                            <td class="text-center">
+                                <form method="POST" action="{% url 'aloqa_ochirish' aloqa.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger confirm-delete" 
+                                            data-bs-toggle="tooltip" title="O'chirish">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                <a href="tel:{{ aloqa.telefon }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-phone-volume"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 
     {% if not bugun and not kecha and not qolgan %}
-        <p class="text-muted mt-4">📭 Hozircha hech qanday aloqa mavjud emas.</p>
+    <div class="text-center py-5">
+        <div class="alert alert-info w-50 mx-auto">
+            <i class="fas fa-info-circle me-2"></i>Hozircha hech qanday murojaat mavjud emas
+        </div>
+    </div>
     {% endif %}
 
-    <a href="/" class="btn btn-outline-primary mt-4">← Bosh sahifaga qaytish</a>
-    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary mt-4">← Ortga qaytish</a>
-
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Ortga
+        </a>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary" id="printBtn">
+                <i class="fas fa-print me-2"></i>Chop etish
+            </button>
+            <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#statsModal">
+                <i class="fas fa-chart-pie me-2"></i>Statistika
+            </button>
+        </div>
+    </div>
 </div>
+
+<!-- Export va Statistics modallarini oldingidek qo‘yish mumkin -->
+
+<!-- Styles va Scripts -->
+<style>
+    .bg-warning-light { background-color: rgba(246, 194, 62, 0.1); }
+    .bg-secondary-light { background-color: rgba(108, 117, 125, 0.1); }
+    .call-btn { transition: all 0.3s ease; }
+    .call-btn:hover { transform: scale(1.1); color: #fff; background-color: #1cc88a !important; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    document.querySelectorAll('.confirm-delete').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            if(!confirm('Rostdan o\'chirmoqchimisiz?')) e.preventDefault();
+        });
+    });
+});
+</script>
 {% endblock %}

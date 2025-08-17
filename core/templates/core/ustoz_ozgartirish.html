@@ -1,36 +1,168 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlar{% endblock %}
-
+{% load custom_filters %}
+{{ i|get_star_rating }}
+{% block title %}Ustozni Tahrirlash{% endblock %}
 
 {% block content %}
-   <!DOCTYPE html>
-<html>
-<head>
-    <title>Ustozni tahrirlash</title>
-</head>
-<body>
-    <h1>Ustozni tahrirlash</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Ustozni Tahrirlash
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ustozIsm" class="form-label fw-bold">Ism</label>
+                                    <input type="text" class="form-control" id="ustozIsm" 
+                                           name="ism" value="{{ ustoz.ism }}" required>
+                                    <div class="invalid-feedback">
+                                        Iltimos, ustoz ismini kiriting
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ustozFan" class="form-label fw-bold">Fan</label>
+                                    <select class="form-select" id="ustozFan" name="fan" required>
+                                        {% for fan in fanlar %}
+                                            <option value="{{ fan.id }}" {% if fan.id == ustoz.fan.id %}selected{% endif %}>
+                                                {{ fan.nomi }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozTajriba" class="form-label fw-bold">Tajriba (yil)</label>
+                                    <input type="number" class="form-control" id="ustozTajriba" 
+                                           name="tajriba_yil" value="{{ ustoz.tajriba_yil }}" min="0" max="50" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozDaraja" class="form-label fw-bold">Daraja (1-5)</label>
+                                    <select class="form-select" id="ustozDaraja" name="daraja" required>
+                                        {% for i in "12345" %}
+                                            <option value="{{ i }}" {% if i == ustoz.daraja|stringformat:"i" %}selected{% endif %}>
+                                                {{ i }} - {{ i|get_star_rating }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozRasm" class="form-label fw-bold">Rasm</label>
+                                    <input type="file" class="form-control" id="ustozRasm" name="rasm">
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="ustozTavsif" class="form-label fw-bold">Tavsif</label>
+                                    <textarea class="form-control" id="ustozTavsif" name="tavsif" 
+                                              rows="5">{{ ustoz.tavsif }}</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                    <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-times me-1"></i> Bekor qilish
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i> Saqlash
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="ism" value="{{ ustoz.ism }}" required><br>
-        <input type="number" name="tajriba_yil" value="{{ ustoz.tajriba_yil }}" required><br>
-        <input type="number" name="daraja" value="{{ ustoz.daraja }}" required><br>
+<style>
+    .form-label {
+        font-weight: 500;
+    }
+    
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .star-rating-preview {
+        color: #f6c23e;
+        font-size: 1.5rem;
+    }
+</style>
 
-        <select name="fan" required>
-            {% for fan in fanlar %}
-                <option value="{{ fan.id }}" {% if fan.id == ustoz.fan.id %}selected{% endif %}>
-                    {{ fan.nomi }}
-                </option>
-            {% endfor %}
-        </select><br>
-
-        <textarea name="tavsif" rows="3" cols="30">{{ ustoz.tavsif }}</textarea><br>
-
-        <button type="submit">Saqlash</button>
-    </form>
-
-    <p><a href="{% url 'ustozlar_boshqaruv' %}">← Ustozlar boshqaruviga qaytish</a></p>
-</body>
-</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+    
+    // Preview star rating
+    const darajaSelect = document.getElementById('ustozDaraja');
+    if (darajaSelect) {
+        const ratingPreview = document.createElement('div');
+        ratingPreview.className = 'star-rating-preview mt-2 text-center';
+        darajaSelect.parentNode.appendChild(ratingPreview);
+        
+        function updateRatingPreview() {
+            const rating = darajaSelect.value;
+            ratingPreview.innerHTML = '&nbsp;'.repeat(5).split('').map((_, i) => 
+                `<i class="fas fa-star${i >= rating ? ' text-muted' : ''}"></i>`
+            ).join('');
+        }
+        
+        darajaSelect.addEventListener('change', updateRatingPreview);
+        updateRatingPreview();
+    }
+    
+    // Image preview
+    const imageInput = document.getElementById('ustozRasm');
+    if (imageInput) {
+        const imagePreview = document.createElement('div');
+        imagePreview.className = 'image-preview mt-3 text-center';
+        imageInput.parentNode.appendChild(imagePreview);
+        
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.innerHTML = `
+                        <img src="${event.target.result}" class="img-thumbnail" 
+                             style="max-height: 200px; max-width: 100%;">
+                        <p class="text-muted mt-2">${file.name}</p>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

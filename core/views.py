@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404, redirect
 from .models import Fan, Ustoz, Aloqa
 from django.contrib.auth.decorators import login_required
 from .forms import AloqaForm, UstozForm
@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from django.views.decorators.http import require_POST
 from .telegram import send_telegram_message
 from django.contrib import messages
+from django.contrib.auth import logout
 
 
 def home(request):
@@ -150,12 +151,64 @@ def aloqa_ochirish(request, aloqa_id):
     return redirect('aloqalar')
 
 
-@login_required
 def ustozlar(request, fan_id):
     fan = get_object_or_404(Fan, id=fan_id)
-    ustozlar = Ustoz.objects.filter(fan=fan)
+    ustozlar = fan.ustoz_set.all()
 
-    return render(request, 'core/ustozlar.html', {
+    if request.method == 'POST':
+        ustoz_id = request.POST.get('ustoz_id')
+        ism = request.POST.get('ism')
+        telefon = request.POST.get('telefon')
+
+        if ustoz_id and ism and telefon:
+            ustoz = Ustoz.objects.get(id=ustoz_id)
+            Aloqa.objects.create(
+                ustoz=ustoz,
+                ism=ism,
+                telefon=telefon
+            )
+            messages.success(request, "Ma’lumot yuborildi!")
+
+    context = {
         'fan': fan,
         'ustozlar': ustozlar
-    })
+    }
+    return render(request, 'core/ustozlar.html', context)
+
+
+# core/views.py
+
+
+def custom_logout(request):
+    logout(request)
+    return redirect('home')   # qaysi sahifaga qaytarishni xoxlasang
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('/')  # chiqgandan keyin home sahifaga yuboradi
+
+
+def ustozlar_list(request):
+    ustozlar = Ustoz.objects.all()
+    
+    # progress_width qo‘shilgan yangi ro'yxat yaratish
+    ustozlar_list = []
+    for ustoz in ustozlar:
+        ustozlar_list.append({
+            'id': ustoz.id,
+            'ism': ustoz.ism,
+            'fan': ustoz.fan,
+            'tajriba_yil': ustoz.tajriba_yil,
+            'daraja': ustoz.daraja,
+            'progress_width': ustoz.tajriba_yil * 10,  # foizga aylantirish
+        })
+    
+    context = {
+        'ustozlar': ustozlar_list,
+    }
+    return render(request, 'core/ustozlar_list.html', context)
+
+def fanlar_list(request):
+    fanlar = Fan.objects.all()
+    return render(request, 'core/fanlar.html', {'fanlar': fanlar})

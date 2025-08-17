@@ -1,23 +1,76 @@
 {% extends 'core/base.html' %}
-{% block title %}Fanlar{% endblock %}
-
+{% block title %}Fanni Tahrirlash{% endblock %}
 
 {% block content %}
-   <!DOCTYPE html>
-<html>
-<head>
-    <title>Fan tahrirlash</title>
-</head>
-<body>
-    <h1>Fan tahrirlash</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Fanni Tahrirlash
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="fanNomi" class="form-label fw-bold">Fan Nomi</label>
+                            <input type="text" class="form-control form-control-lg" id="fanNomi" 
+                                   name="nomi" value="{{ fan.nomi }}" required>
+                            <div class="invalid-feedback">
+                                Iltimos, fan nomini kiriting
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="fanTavsif" class="form-label fw-bold">Fan Tavsifi</label>
+                            <textarea class="form-control" id="fanTavsif" name="tavsif" 
+                                      rows="4">{{ fan.tavsif|default:"" }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'fanlar_boshqaruv' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Bekor qilish
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Saqlash
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="nomi" value="{{ fan.nomi }}" required>
-        <button type="submit">Saqlash</button>
-    </form>
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .form-control-lg {
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
 
-    <p><a href="{% url 'fanlar_boshqaruv' %}">← Fanlar boshqaruviga qaytish</a></p>
-</body>
-</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+    
+    // Auto-focus on first input
+    document.getElementById('fanNomi').focus();
+});
+</script>
 {% endblock %}

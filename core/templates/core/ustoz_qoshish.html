@@ -1,48 +1,190 @@
 {% extends 'core/base.html' %}
-{% block title %}Ustoz qo‘shish{% endblock %}
+{% block title %}Yangi Ustoz Qo'shish{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4 text-success">➕ Yangi ustoz qo‘shish</h2>
-
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="ism" class="form-label">Ismi</label>
-            <input type="text" name="ism" class="form-control" required>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Yangi Ustoz Qo'shish
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ustozIsm" class="form-label fw-bold">Ism</label>
+                                    <input type="text" class="form-control" id="ustozIsm" 
+                                           name="ism" required>
+                                    <div class="invalid-feedback">
+                                        Iltimos, ustoz ismini kiriting
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ustozFan" class="form-label fw-bold">Fan</label>
+                                    <select class="form-select" id="ustozFan" name="fan" required>
+                                        <option value="" selected disabled>Tanlang...</option>
+                                        {% for fan in fanlar %}
+                                            <option value="{{ fan.id }}">{{ fan.nomi }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Iltimos, fanni tanlang
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozTajriba" class="form-label fw-bold">Tajriba (yil)</label>
+                                    <input type="number" class="form-control" id="ustozTajriba" 
+                                           name="tajriba_yil" min="0" max="50" required>
+                                    <div class="invalid-feedback">
+                                        Iltimos, tajriba yilini kiriting
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozDaraja" class="form-label fw-bold">Daraja (1-5)</label>
+                                    <select class="form-select" id="ustozDaraja" name="daraja" required>
+                                        <option value="" selected disabled>Tanlang...</option>
+                                        {% for i in "12345" %}
+                                            <option value="{{ i }}">{{ i }} - {{ i|get_star_rating }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Iltimos, darajani tanlang
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="ustozRasm" class="form-label fw-bold">Rasm</label>
+                                    <input type="file" class="form-control" id="ustozRasm" name="rasm">
+                                    <div class="form-text">
+                                        Ixtiyoriy (JPG/PNG, max 2MB)
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="ustozTavsif" class="form-label fw-bold">Tavsif</label>
+                                    <textarea class="form-control" id="ustozTavsif" name="tavsif" 
+                                              rows="5" required></textarea>
+                                    <div class="invalid-feedback">
+                                        Iltimos, ustoz haqida tavsif yozing
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                    <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-times me-1"></i> Bekor qilish
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-1"></i> Saqlash
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="fan" class="form-label">Fan</label>
-            <select name="fan" class="form-select" required>
-                {% for fan in fanlar %}
-                    <option value="{{ fan.id }}">{{ fan.nomi }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="tajriba_yil" class="form-label">Tajriba (yil)</label>
-            <input type="number" name="tajriba_yil" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="daraja" class="form-label">Daraja</label>
-            <input type="number" name="daraja" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="tavsif" class="form-label">Tavsif</label>
-            <textarea name="tavsif" class="form-control" rows="3" required></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="rasm" class="form-label">Rasm (ixtiyoriy)</label>
-            <input type="file" name="rasm" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-success">✅ Qo‘shish</button>
-        <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-secondary">← Ortga</a>
-    </form>
+    </div>
 </div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .form-label {
+        font-weight: 500;
+    }
+    
+    .image-preview-container {
+        border: 2px dashed #dee2e6;
+        border-radius: 5px;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .image-preview {
+        max-height: 200px;
+        max-width: 100%;
+        display: none;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+    
+    // Image preview
+    const imageInput = document.getElementById('ustozRasm');
+    if (imageInput) {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'image-preview-container';
+        const previewImage = document.createElement('img');
+        previewImage.className = 'image-preview img-thumbnail mb-2';
+        const previewText = document.createElement('div');
+        previewText.className = 'text-muted';
+        previewText.textContent = 'Rasm ko\'rinishi';
+        
+        previewContainer.appendChild(previewImage);
+        previewContainer.appendChild(previewText);
+        imageInput.parentNode.insertBefore(previewContainer, imageInput.nextSibling);
+        
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Rasm hajmi 2MB dan katta bo\'lmasligi kerak');
+                    this.value = '';
+                    previewImage.style.display = 'none';
+                    previewText.textContent = 'Rasm ko\'rinishi';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewImage.style.display = 'block';
+                    previewText.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = 'none';
+                previewText.textContent = 'Rasm ko\'rinishi';
+            }
+        });
+    }
+    
+    // Auto-focus on first input
+    document.getElementById('ustozIsm').focus();
+});
+</script>
 {% endblock %}

@@ -2,7 +2,7 @@
 from decouple import config
 import requests
 
-BOT_TOKEN = '7840660282:AAFA8jkkVzlZQjFaJzB1x5oPn3hIxvsxyVc'
+BOT_TOKEN = '8462307947:AAHETsA-2DBGhvkhHLWUvQ_TO1mt2ncOxDY'
 CHAT_ID = '6962660353'
 
 def send_telegram_message(message):

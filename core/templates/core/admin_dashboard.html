@@ -1,42 +1,176 @@
-Durdona{% extends 'core/base.html' %}
+{% extends 'core/base.html' %}
 {% block title %}Admin Paneli{% endblock %}
 
 {% block content %}
+<div class="admin-dashboard">
     <div class="text-center mb-5">
-        <h2 class="display-5">👨‍💼 Admin Paneliga Xush Kelibsiz</h2>
-        <p class="lead">Quyidagilardan birini tanlang:</p>
+        <h1 class="display-4 fw-bold text-gradient-primary">
+            <i class="fas fa-user-shield me-2"></i>Admin Paneliga Xush Kelibsiz
+        </h1>
+        <p class="lead text-muted">Quyidagi boshqaruv panelidan foydalaning</p>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card text-white bg-primary mb-3 shadow">
-                <div class="card-body text-center">
-                    <h4 class="card-title">📚 Fanlar Boshqaruvi</h4>
-                    <p class="card-text">Fanlarni qo‘shish, o‘chirish, o‘zgartirish mumkin</p>
-                    <a href="{% url 'fanlar_boshqaruv' %}" class="btn btn-light">Kirish</a>
+    <div class="row g-4 justify-content-center">
+        <!-- Fanlar Card -->
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card card-hover bg-primary text-white shadow-lg">
+                <div class="card-body text-center py-4">
+                    <div class="dashboard-icon mb-3">
+                        <i class="fas fa-book-open fa-3x"></i>
+                    </div>
+                    <h3 class="card-title fw-bold">Fanlar Boshqaruvi</h3>
+                    <p class="card-text opacity-75">Fanlarni to'liq boshqarish</p>
+                    <a href="{% url 'fanlar_boshqaruv' %}" class="btn btn-light btn-rounded stretched-link">
+                        <i class="fas fa-arrow-right me-1"></i> Kirish
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-5">
-            <div class="card text-white bg-success mb-3 shadow">
-                <div class="card-body text-center">
-                    <h4 class="card-title">👨‍🏫 Ustozlar Boshqaruvi</h4>
-                    <p class="card-text">Ustozlarni boshqarish imkoniyati</p>
-                    <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-light">Kirish</a>
+        <!-- Ustozlar Card -->
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card card-hover bg-success text-white shadow-lg">
+                <div class="card-body text-center py-4">
+                    <div class="dashboard-icon mb-3">
+                        <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                    </div>
+                    <h3 class="card-title fw-bold">Ustozlar Boshqaruvi</h3>
+                    <p class="card-text opacity-75">Ustozlarni boshqarish</p>
+                    <a href="{% url 'ustozlar_boshqaruv' %}" class="btn btn-light btn-rounded stretched-link">
+                        <i class="fas fa-arrow-right me-1"></i> Kirish
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aloqalar Card -->
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card card-hover bg-warning text-white shadow-lg">
+                <div class="card-body text-center py-4">
+                    <div class="dashboard-icon mb-3">
+                        <i class="fas fa-phone-volume fa-3x"></i>
+                    </div>
+                    <h3 class="card-title fw-bold">Murojaatlar</h3>
+                    <p class="card-text opacity-75">Telefon raqamlar ro'yxati</p>
+                    <a href="{% url 'aloqalar' %}" class="btn btn-dark btn-rounded stretched-link">
+                        <i class="fas fa-arrow-right me-1"></i> Ko'rish
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card card-hover bg-info text-white shadow-lg">
+                <div class="card-body text-center py-4">
+                    <div class="dashboard-icon mb-3">
+                        <i class="fas fa-chart-pie fa-3x"></i>
+                    </div>
+                    <h3 class="card-title fw-bold">Statistika</h3>
+                    <p class="card-text opacity-75">Platforma statistikasi</p>
+                    <button class="btn btn-light btn-rounded" data-bs-toggle="modal" data-bs-target="#statsModal">
+                        <i class="fas fa-arrow-right me-1"></i> Ko'rish
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-md-5">
-        <div class="card text-white bg-warning mb-3 shadow">
-            <div class="card-body text-center">
-                <h4 class="card-title">📱 Nomer qoldirganlar</h4>
-                <p class="card-text">Kimlar ustoz tanlaganini ko‘rish</p>
-                <a href="{% url 'aloqalar' %}" class="btn btn-dark">Ko‘rish</a>
+<!-- Stats Modal -->
+<div class="modal fade" id="statsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Platforma Statistikasi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="stat-card bg-primary text-white p-4 rounded-3 shadow">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon me-3">
+                                    <i class="fas fa-book fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Fanlar soni</h6>
+                                    <h2 class="mb-0 fw-bold">{{ fanlar_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="stat-card bg-success text-white p-4 rounded-3 shadow">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon me-3">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Ustozlar soni</h6>
+                                    <h2 class="mb-0 fw-bold">{{ ustozlar_count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
+<style>
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .card-hover {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .dashboard-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+    }
+    
+    .btn-rounded {
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to cards on load
+    const cards = document.querySelectorAll('.card-hover');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate__animated', 'animate__fadeInUp');
+    });
+});
+</script>
 {% endblock %}
